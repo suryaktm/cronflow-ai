@@ -85,4 +85,11 @@ public class SchedulingService {
             scheduleJob(job);
         }
     }
+
+    public void removeJob(Long jobId) {
+        // Look up job to get Project ID for the composite key
+        scriptJobRepository.findById(jobId).ifPresent(job -> {
+            unscheduleJob(jobId, job.getProject().getId());
+        });
+    }
 }

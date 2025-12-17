@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { JobService } from '../../../core/services/job.service';
 import { ProjectStateService } from '../../../core/services/project-state.service';
 import { Router } from '@angular/router';
+import { AiService } from '../../../core/services/ai.service';
 
 @Component({
   selector: 'app-job-form',
@@ -34,8 +35,29 @@ export class JobFormComponent implements OnInit {
   constructor(
     private jobService: JobService,
     private projectStateService: ProjectStateService,
-    private router: Router
+    private router: Router,
+    private aiService: AiService
   ) { }
+
+  isGenerating = false;
+
+  generateScript(): void {
+    const prompt = window.prompt('Describe what this script should do:');
+    if (!prompt) return;
+
+    this.isGenerating = true;
+    this.aiService.generateScript(prompt, 'bash').subscribe({
+      next: (res) => {
+        this.scriptContent = res.content;
+        this.isGenerating = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.isGenerating = false;
+        alert('Failed to generate script');
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.projectStateService.projectId$.subscribe(id => {

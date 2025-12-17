@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  cronflow-backend:
+    build: ./cronflow-backend
+    container_name: cronflow-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/scripts:/tmp # Persist scripts
+    environment:
+      - SERVER_PORT=8080
+      - DOCKER_HOST=unix:///var/run/docker.sock # For future Docker-in-Docker
+      # If using real DB later:
+      # - SPRING_DATASOURCE_URL=jdbc:mysql://...
+
+  cronflow-ui:
+    build: ./cronflow-ui
+    container_name: cronflow-ui
+    ports:
+      - "4300:80"
+    depends_on:
+      - cronflow-backend

@@ -1,0 +1,42 @@
+<div class="space-y-8 animate-fade-in">
+    <div>
+        <h2 class="text-3xl font-bold text-white tracking-tight">Dashboard</h2>
+        <p class="text-slate-400 mt-1">Overview of your automation infrastructure.</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div *ngFor="let stat of stats" class="card p-6 flex items-center space-x-4">
+            <div class="p-3 rounded-lg {{stat.bg}}">
+                <span class="text-2xl">{{stat.icon}}</span>
+            </div>
+            <div>
+                <p class="text-slate-400 text-sm font-medium">{{stat.title}}</p>
+                <p class="text-2xl font-bold text-white">{{stat.value}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card p-6">
+        <h3 class="text-xl font-bold text-white mb-6">Recent Activity</h3>
+        <div class="space-y-4">
+            <div *ngFor="let item of recentActivity"
+                class="flex items-center justify-between p-4 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700">
+                <div class="flex items-center space-x-4">
+                    <div class="w-2 h-2 rounded-full"
+                        [ngClass]="{'bg-green-500': item.status === 'SUCCESS', 'bg-red-500': item.status === 'FAILED', 'bg-blue-500': item.status === 'RUNNING'}">
+                    </div>
+                    <div>
+                        <p class="text-white font-medium">{{item.job}}</p>
+                        <p class="text-xs text-slate-500">{{item.status}}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-slate-300 text-sm">{{item.duration}}</p>
+                    <p class="text-slate-500 text-xs">{{item.time}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

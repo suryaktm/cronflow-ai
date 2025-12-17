@@ -1,0 +1,46 @@
+<div class="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-4">
+
+    <!-- Chat Window -->
+    <div *ngIf="isOpen"
+        class="w-80 h-96 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl flex flex-col overflow-hidden animate-fade-in-up">
+
+        <!-- Header -->
+        <div class="h-12 bg-slate-900 border-b border-slate-700 flex items-center justify-between px-4">
+            <div class="flex items-center space-x-2">
+                <span class="text-xl">🤖</span>
+                <span class="font-bold text-white">CronBot</span>
+            </div>
+            <button (click)="toggleChat()" class="text-slate-400 hover:text-white transition-colors">✕</button>
+        </div>
+
+        <!-- Messages -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-900/50">
+            <div *ngFor="let msg of messages" class="flex"
+                [ngClass]="msg.sender === 'user' ? 'justify-end' : 'justify-start'">
+                <div class="max-w-[80%] rounded-lg px-3 py-2 text-sm"
+                    [ngClass]="msg.sender === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-200'">
+                    {{ msg.text }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="p-3 bg-slate-900 border-t border-slate-700">
+            <form (ngSubmit)="sendMessage()" class="flex space-x-2">
+                <input type="text" [(ngModel)]="userInput" name="userInput" placeholder="Ask something..."
+                    class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                <button type="submit" [disabled]="!userInput.trim()"
+                    class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50">
+                    ➤
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button (click)="toggleChat()"
+        class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/30 flex items-center justify-center text-2xl hover:scale-110 transition-transform duration-200">
+        <span *ngIf="!isOpen">💬</span>
+        <span *ngIf="isOpen">⬇️</span>
+    </button>
+</div>

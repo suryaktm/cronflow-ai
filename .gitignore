@@ -1,0 +1,21 @@
+# Backend
+**/target/
+**/*.class
+**/logs/
+**/*.log
+cronflow-backend/.mvn/wrapper/maven-wrapper.jar
+
+# Frontend
+**/node_modules/
+**/dist/
+**/.angular/
+**/.vscode/
+
+# IDE
+**/.idea/
+**/*.iml
+**/.DS_Store
+
+# Misc
+**/tmp/
+**/temp/

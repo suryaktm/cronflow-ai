@@ -1,0 +1,122 @@
+<div class="max-w-4xl mx-auto animate-fade-in">
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <h2 class="text-3xl font-bold text-white tracking-tight">Create Job</h2>
+            <p class="text-slate-400 mt-1">Define a new automation script.</p>
+        </div>
+        <button routerLink="/jobs" class="text-slate-400 hover:text-white transition-colors">
+            Cancel
+        </button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="card p-8 space-y-6">
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-lg">
+            {{ errorMessage }}
+        </div>
+
+        <!-- Check if jobs length for loading? No, loading is local -->
+        <div *ngIf="isLoading"
+            class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center rounded-xl">
+            <div class="animate-spin text-4xl">🌀</div>
+        </div>
+
+        <!-- Job Name -->
+        <div>
+            <label for="name" class="block text-sm font-medium text-slate-300 mb-2">Job Name</label>
+            <input type="text" id="name" [(ngModel)]="name" name="name" required class="input-field w-full"
+                placeholder="e.g. Daily Data Backup">
+        </div>
+
+        <!-- Docker Image -->
+        <div>
+            <label for="dockerImage" class="block text-sm font-medium text-slate-300 mb-2">Docker Image
+                (Environment)</label>
+            <input type="text" id="dockerImage" [(ngModel)]="dockerImage" name="dockerImage"
+                class="input-field w-full font-mono text-sm" placeholder="ubuntu, python:3.9, or openjdk:17">
+            <p class="text-xs text-slate-500 mt-1">Specify container image for isolated execution. Defaults to 'ubuntu'
+                for Shell, 'openjdk' for Java.</p>
+        </div>
+
+        <!-- Scheduling -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+            <div class="col-span-1 md:col-span-2">
+                <h3 class="text-sm font-semibold text-slate-200 mb-4">Scheduling</h3>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-400 mb-2">Frequency</label>
+                <select [(ngModel)]="scheduleType" name="scheduleType" class="input-field w-full bg-slate-900">
+                    <option value="none">Manual Trigger Only</option>
+                    <option value="daily">Daily Execution</option>
+                    <option value="cron">Advanced (CRON)</option>
+                </select>
+            </div>
+
+            <div *ngIf="scheduleType === 'daily'">
+                <label class="block text-sm font-medium text-slate-400 mb-2">Time (Local)</label>
+                <input type="time" [(ngModel)]="scheduleTime" name="scheduleTime"
+                    class="input-field w-full bg-slate-900">
+            </div>
+
+            <div *ngIf="scheduleType === 'cron'" class="col-span-1 md:col-span-2">
+                <label class="block text-sm font-medium text-slate-400 mb-2">CRON Expression</label>
+                <input type="text" [(ngModel)]="cronExpressionInput" name="cron" placeholder="0 0 12 * * ?"
+                    class="input-field w-full font-mono bg-slate-900">
+                <p class="text-xs text-slate-500 mt-1">Format: Sec Min Hour Day Month Weekday</p>
+            </div>
+        </div>
+
+        <!-- Script Source -->
+        <div>
+            <div class="flex items-center justify-between mb-4">
+                <label class="block text-sm font-medium text-slate-300">Script Configuration</label>
+                <div class="flex space-x-1 bg-slate-800 p-1 rounded-lg">
+                    <button type="button" (click)="scriptSource = 'INLINE'"
+                        [class]="scriptSource === 'INLINE' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'"
+                        class="px-3 py-1 text-xs rounded-md transition-all">Inline</button>
+                    <button type="button" (click)="scriptSource = 'FILE'"
+                        [class]="scriptSource === 'FILE' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'"
+                        class="px-3 py-1 text-xs rounded-md transition-all">Server Path</button>
+                    <button type="button" (click)="scriptSource = 'UPLOAD'"
+                        [class]="scriptSource === 'UPLOAD' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'"
+                        class="px-3 py-1 text-xs rounded-md transition-all">Upload</button>
+                </div>
+            </div>
+
+            <!-- Inline -->
+            <div *ngIf="scriptSource === 'INLINE'">
+                <div class="relative rounded-lg overflow-hidden border border-slate-700 bg-[#1e1e1e]">
+                    <textarea id="scriptContent" [(ngModel)]="scriptContent" name="scriptContent" rows="15"
+                        class="w-full h-full bg-[#1e1e1e] text-slate-200 p-4 font-mono text-sm focus:outline-none resize-none leading-relaxed"
+                        spellcheck="false"></textarea>
+                </div>
+            </div>
+
+            <!-- File Path -->
+            <div *ngIf="scriptSource === 'FILE'"
+                class="p-6 border border-slate-700 rounded-lg bg-slate-800/30 border-dashed">
+                <label class="block text-sm font-medium text-slate-400 mb-2">Server File Path</label>
+                <input type="text" [(ngModel)]="scriptPathInput" name="scriptPath"
+                    placeholder="/opt/cronflow/scripts/backup.sh" class="input-field w-full font-mono">
+                <p class="text-xs text-slate-500 mt-2">File must exist on the backend server.</p>
+            </div>
+
+            <!-- Upload -->
+            <div *ngIf="scriptSource === 'UPLOAD'"
+                class="p-8 border-2 border-slate-700 rounded-lg bg-slate-800/30 border-dashed text-center hover:border-cyan-500/50 transition-colors">
+                <div class="text-4xl mb-4">📂</div>
+                <input type="file" (change)="onFileSelected($event)"
+                    class="text-slate-300 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20">
+                <p class="text-xs text-slate-500 mt-4">File will be uploaded to backend storage.</p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="pt-4 flex justify-end">
+            <button type="submit" [disabled]="!name" class="btn-primary px-8 py-3">
+                Create Job
+            </button>
+        </div>
+    </form>
+</div>
